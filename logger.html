@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Logging Visitor Info...</title>
+  <script>
+    async function logAndRedirect() {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref") || "unknown";
+
+      let ip = "unknown", city = "", country = "";
+
+      try {
+        const res = await fetch("https://ipwho.is/");
+        const data = await res.json();
+        ip = data.ip;
+        city = data.city;
+        country = data.country;
+      } catch (err) {
+        console.warn("IP lookup failed:", err);
+      }
+
+      // 🔧 Replace with your actual Google Form's formResponse endpoint
+      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfMJlqRTmhcT3CUT1gr01i1yMFmsnlWLqjYU4uPEcFeb_oeLQ/formResponse";
+      
+      // 🔧 Replace entry IDs with your actual field mappings
+      const formData = new URLSearchParams({
+        "entry.1600038481": ip,        // IP address
+        "entry.787699008": city,      // City
+        "entry.256200958: country,   // Country
+        "entry.1191315289": ref        // Visitor tag (e.g. client123)
+      });
+
+      // 📬 Send data silently
+      fetch(formURL + "?" + formData.toString(), { method: "POST", mode: "no-cors" });
+
+      // ⏳ Small delay to make sure it logs
+      setTimeout(() => {
+        window.location.href = "https://www.aicompute.com/chart-btc";
+      }, 800);
+    }
+
+    window.onload = logAndRedirect;
+  </script>
+</head>
+<body>
+  <p>🔄 Redirecting to chart page...</p>
+</body>
+</html>
